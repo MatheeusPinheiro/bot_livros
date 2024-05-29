@@ -45,12 +45,19 @@ class Bot(WebBot):
         titulo = self.find_element('//*[@id="corpo"]/div[1]/div/div[2]/div/div/div[2]/div/div[1]/h1', By.XPATH).text
         #preco
         preco = self.find_element('//*[@id="corpo"]/div[1]/div/div[2]/div/div/div[2]/div/div[2]/div[1]/div/div[1]/strong',By.XPATH).text
+        
         #autor
-        autor = self.find_element('//*[@id="descricao"]/ul/li[1]/strong', By.XPATH).text
+        autor = self.find_element('//*[@id="descricao"]/ul/li[1]', By.XPATH).text
+        autor  = autor.split(':')
+        autor = autor[2]
         #Editora
-        editora = self.find_element('//*[@id="descricao"]/ul/li[1]/strong', By.XPATH).text
+        editora = self.find_element('//*[@id="descricao"]/ul/li[2]', By.XPATH).text
+        editora = editora.split(':')
+        editora = editora[1]
         #qtd_paginas
-        qtd_paginas = self.find_element('//*[@id="descricao"]/ul/li[4]/strong', By.XPATH).text
+        qtd_paginas = self.find_element('//*[@id="descricao"]/ul/li[4]', By.XPATH).text
+        qtd_paginas = qtd_paginas.split(':')
+        qtd_paginas = qtd_paginas[1]
 
     
 
@@ -100,6 +107,7 @@ class Bot(WebBot):
                 print(f'editora {editora}')
                 print(f'Quantidade de paginas {qtd_paginas}')
                 self.navigate_to('https://www.livroselivros.com.br')
+            
 
         except Exception as ex:
             print(ex)
