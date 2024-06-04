@@ -21,7 +21,7 @@ class Bot(WebBot):
         'Senhora',
         'A Moreninha',
         'Morte e Vida Severina',
-        'O Auto da Compadecida'
+        'LITERATURA E DITADURA'
         ]
 
     def buscar_livro(self, livro):
@@ -43,21 +43,25 @@ class Bot(WebBot):
         #Extrair informações do livro 
         #titulo
         titulo = self.find_element('//*[@id="corpo"]/div[1]/div/div[2]/div/div/div[2]/div/div[1]/h1', By.XPATH).text
+        self.wait(300)
         #preco
         preco = self.find_element('//*[@id="corpo"]/div[1]/div/div[2]/div/div/div[2]/div/div[2]/div[1]/div/div[1]/strong',By.XPATH).text
-        
+        self.wait(300)
         #autor
         autor = self.find_element('//*[@id="descricao"]/ul/li[1]', By.XPATH).text
         autor  = autor.split(':')
         autor = autor[2]
+        self.wait(300)
         #Editora
         editora = self.find_element('//*[@id="descricao"]/ul/li[2]', By.XPATH).text
         editora = editora.split(':')
         editora = editora[1]
+        self.wait(300)
         #qtd_paginas
         qtd_paginas = self.find_element('//*[@id="descricao"]/ul/li[4]', By.XPATH).text
         qtd_paginas = qtd_paginas.split(':')
         qtd_paginas = qtd_paginas[1]
+        self.wait(300)
 
     
 
@@ -92,6 +96,12 @@ class Bot(WebBot):
 
         # Implement here your logic...
         try:
+            maestro.alert(
+                task_id=execution.task_id,
+                title="Buscar_Livros - Inicio",
+                message="Estamos iniciando o processo",
+                alert_type=AlertType.INFO
+            )
 
             for livro in self.lista_livros:
                 self.buscar_livro(livro)
@@ -99,32 +109,50 @@ class Bot(WebBot):
                 self.wait(1000)
                 titulo,preco,autor,editora,qtd_paginas = self.extrair_informacoes_livro()
 
-
-                print(f'Titulo {titulo}')
-                print(f'link do livro {link_livro}')
-                print(f'Preço {preco}')
-                print(f'Autor {autor}')
-                print(f'editora {editora}')
-                print(f'Quantidade de paginas {qtd_paginas}')
                 self.navigate_to('https://www.livroselivros.com.br')
+                
+                maestro.new_log_entry(
+                    activity_label="DadosLivros",
+                    values={
+                        "titulo": titulo,
+                        "link_livro": link_livro,
+                        "preco": preco,
+                        "autor": autor,
+                        "editora":editora,
+                        "qtd_paginas": qtd_paginas
+                    }
+                )
+            
+                #Status da tarefa
+                status = AutomationTaskFinishStatus.SUCCESS
+                message = "Tarefa buscar livros finalizada com sucesso"
             
 
         except Exception as ex:
-            print(ex)
+            #Salvando captura de tela do erro
+            self.save_screenshot()
+            
+            maestro.error(
+                task_id=execution.task_id,
+                exception=ex,
+                screenshot="erro.png"
+            )
+            
+            #Status da tarefa
+            status = AutomationTaskFinishStatus.FAILED
+            message = "Tarefa buscar livros finalizada com falha"
         finally:
             # Wait 3 seconds before closing
             self.wait(3000)
 
             # Finish and clean up the Web Browser
-            # You MUST invoke the stop_browser to avoid
-            # leaving instances of the webdriver open
             self.stop_browser()
 
             # Uncomment to mark this task as finished on BotMaestro
             maestro.finish_task(
                 task_id=execution.task_id,
-                status=AutomationTaskFinishStatus.SUCCESS,
-                message="Tarefa Finalizada com sucesso"
+                status=status,
+                message=message
             )
 
 
