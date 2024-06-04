@@ -5,7 +5,7 @@ Este bot foi desenvolvido com o BotCity e tem como objetivo identificar e listar
 ### Funcionalidades
 - Gera alerta de inicio da automação no Orquestrador BotCity
 - Extrai informações dos 10 livros
-- Cria um log com as informações extraidas do site
+- Cria um log com as informações extraidas do site no Orquestrador BotCity
 
 ### Requisitos
   - Navegador Web (Firefox, Chrome ou qualquer outro)
